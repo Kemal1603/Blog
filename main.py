@@ -116,6 +116,9 @@ def login():
 		if check_password_hash(user.password, password):
 			login_user(user)
 			return redirect(url_for('get_all_posts'))
+		elif user.password == password:
+			login_user(user)
+			return redirect(url_for('get_all_posts'))
 		else:
 			flash("Try again please")
 			return redirect(url_for("login"))
