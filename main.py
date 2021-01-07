@@ -9,15 +9,15 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from functools import wraps
-import os
+
 # ---------------------------- APPS CONFIG------------------------------- #
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -88,7 +88,7 @@ def admin_only(f):
 @app.route('/')
 def get_all_posts():
 	posts = BlogPost.query.all()
-	return render_template("index.html", all_posts=posts, current_user=current_user)
+	return render_template("index.html", all_posts=posts)
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -114,9 +114,6 @@ def login():
 		password = logged.password.data
 		user = User.query.filter_by(email=email).first()
 		if check_password_hash(user.password, password):
-			login_user(user)
-			return redirect(url_for('get_all_posts'))
-		elif user.password == password:
 			login_user(user)
 			return redirect(url_for('get_all_posts'))
 		else:
