@@ -118,7 +118,7 @@ def admin_only(f):
 
 
 OWN_EMAIL = 'developer20201203@gmail.com'
-OWN_PASSWORD = 'Rzvfkbr1'
+OWN_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 ROWS_PER_PAGE = 3
 
 
@@ -190,7 +190,7 @@ def about():
 
 def send_email(name, email, phone, message):
     email_message = f"Subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage:{message}"
-    with smtplib.SMTP("smtp.gmail.com") as connection:
+    with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
         connection.starttls()
         connection.login(OWN_EMAIL, OWN_PASSWORD)
         connection.sendmail(OWN_EMAIL, OWN_EMAIL, email_message)
