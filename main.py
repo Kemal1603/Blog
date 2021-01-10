@@ -1,19 +1,25 @@
 # ---------------------------- IMPORTED MODULES------------------------------- #
-from flask import Flask, render_template, redirect, url_for, flash, request, abort
+from flask import Flask, render_template, redirect, url_for, flash, request, abort, send_from_directory
 from flask_bootstrap import Bootstrap
-from flask_ckeditor import CKEditor
+from flask_ckeditor import CKEditor, upload_success, upload_fail
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
+from forms import RegisterForm, LoginForm, CommentForm
 from functools import wraps
 import os
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired, URL
+from flask_ckeditor import CKEditorField
+
 # ---------------------------- APPS CONFIG------------------------------- #
 app = Flask(__name__)
 # '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
@@ -21,6 +27,7 @@ Bootstrap(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -72,6 +79,31 @@ class Comments(db.Model):
 
 
 db.create_all()
+
+
+class CreatePostForm(FlaskForm):
+	title = StringField("Blog Post Title", validators=[DataRequired()])
+	subtitle = StringField("Subtitle", validators=[DataRequired()])
+	author = StringField("Your Name", validators=[DataRequired()])
+	img_url = StringField("Blog Image URL", validators=[DataRequired(), URL()])
+	body = CKEditorField("Blog Content", validators=[DataRequired()])
+	submit = SubmitField("Submit Post")
+
+
+@app.route('/img/<path:filename>')
+def serve_audio(filename):
+	return send_from_directory('img/', filename)
+
+
+@app.route('/upload', methods=['POST'])
+def upload():
+	f = request.files.get('upload')
+	extension = f.filename.split('.')[-1].lower()
+	if extension not in ['jpg', 'gif', 'png', 'jpeg']:
+		return upload_fail(message='Image only!')
+	f.save(os.path.join('./img', f.filename))
+	url = url_for('serve_audio', filename=f.filename)
+	return upload_success(url=url)  # return upload_success call
 
 
 # ---------------------------- WRAPPERS & PREEXISTED FUNCTIONS------------------------------- #
@@ -175,7 +207,7 @@ def add_new_post():
 	return render_template("make-post.html", form=form)
 
 
-@app.route("/edit-post/<int:post_id>")
+@app.route("/edit-post/<int:post_id>", methods=['GET', 'POST'])
 @login_required
 @admin_only
 def edit_post(post_id):
