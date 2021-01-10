@@ -118,7 +118,7 @@ def admin_only(f):
 
 
 OWN_EMAIL = 'developer20201203@gmail.com'
-OWN_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+OWN_PASSWORD = 'Rzvfkbr1'
 ROWS_PER_PAGE = 3
 
 
