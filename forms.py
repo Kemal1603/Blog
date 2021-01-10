@@ -38,4 +38,4 @@ class GetInTouch(FlaskForm):
 	email = EmailField("Email", validators=[DataRequired(), Email()])
 	phone = TelField('Phone Number', validators=[DataRequired()])
 	message = StringField("Message", validators=[DataRequired()])
-	submit = SubmitField("Send Respond")
+	submit = SubmitField("Send Request")
