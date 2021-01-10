@@ -1,8 +1,8 @@
 # ---------------------------- IMPORTED MODULES------------------------------- #
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
-from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired, URL, Email
+from wtforms import StringField, SubmitField, PasswordField, TextField
+from wtforms.fields.html5 import EmailField, TelField
+from wtforms.validators import DataRequired, Email
 from flask_ckeditor import CKEditorField
 
 
@@ -31,3 +31,11 @@ class LoginForm(FlaskForm):
 class CommentForm(FlaskForm):
 	comment = CKEditorField("Comment", validators=[DataRequired()])
 	submit = SubmitField("Submit Comment")
+
+
+class GetInTouch(FlaskForm):
+	name = StringField("Name", validators=[DataRequired()])
+	email = EmailField("Email", validators=[DataRequired(), Email()])
+	phone = TelField('Phone Number', validators=[DataRequired()])
+	message = StringField("Message", validators=[DataRequired()])
+	submit = SubmitField("Send Respond")
