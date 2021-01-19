@@ -200,10 +200,14 @@ def send_email(name, email, phone, message):
 def contact():
     contact_form = GetInTouch()
     if contact_form.validate_on_submit():
-        contact_form_respond = contact_form
-        send_email(contact_form_respond.name.data, contact_form_respond.email.data,
-                   contact_form_respond.phone.data, contact_form_respond.message.data)
-        return render_template("contact.html", msg_sent=True)
+        if contact_form.validate():
+            contact_form_respond = contact_form
+            send_email(contact_form_respond.name.data, contact_form_respond.email.data,
+                       contact_form_respond.phone.data, contact_form_respond.message.data)
+            return render_template("contact.html", msg_sent=True)
+        else:
+            flash("Please check That all details are entered correctly")
+            return render_template("contact.html", msg_sent=True, form=contact_form)
     return render_template("contact.html", msg_sent=False, form=contact_form)
 
 
