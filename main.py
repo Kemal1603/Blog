@@ -1,6 +1,7 @@
 # ---------------------------- IMPORTED MODULES------------------------------- #
+import datetime
 import smtplib
-from flask import Flask, render_template, redirect, url_for, flash, request, abort, send_from_directory
+from flask import Flask, render_template, redirect, url_for, flash, request, abort, send_from_directory, safe_join
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor, upload_success, upload_fail
 from datetime import date
@@ -128,6 +129,11 @@ def get_all_posts():
     page = request.args.get('page', 1, type=int)
     posts = BlogPost.query.paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template("index.html", all_posts=posts)
+
+
+@app.route('/Kemal Kalandarov CV')
+def download():
+    return send_from_directory('static', filename="cv/cv.pdf")
 
 
 @app.route('/register', methods=["GET", "POST"])
